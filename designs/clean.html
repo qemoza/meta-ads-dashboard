@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meta Ads Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+<!-- Design: clean. Light, calm, one accent colour. Dark mode follows your system. -->
+<style>
+  :root {
+    --bg: #f5f5f2; --card: #ffffff; --ink: #17171a; --ink-2: #55555c; --ink-3: #8a8a92; --line: #e6e5e0;
+    --accent: #5a45d6; --accent-soft: #efecfd; --bar: #7a68e8; --bar-hot: #4a36c4;
+    --off-bg: #f0efeb; --off-ink: #9d9b94; --off-line: #d9d7d0;
+    --yes: #17804f; --no: #b3402f; --warn-bg: #fff6d8; --warn-ink: #6b5200;
+    --shadow: 0 1px 2px rgba(20, 20, 30, .04), 0 4px 18px rgba(20, 20, 30, .05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121214; --card: #1b1b1f; --ink: #ececf0; --ink-2: #b2b2ba; --ink-3: #7c7c86; --line: #2b2b31;
+      --accent: #a597ff; --accent-soft: #25213d; --bar: #8e7ff5; --bar-hot: #c2b8ff;
+      --off-bg: #17171a; --off-ink: #6a6a72; --off-line: #33333a;
+      --yes: #4cc38a; --no: #ee7b6a; --warn-bg: #2e2a17; --warn-ink: #e8d48a; --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121214; --card: #1b1b1f; --ink: #ececf0; --ink-2: #b2b2ba; --ink-3: #7c7c86; --line: #2b2b31;
+    --accent: #a597ff; --accent-soft: #25213d; --bar: #8e7ff5; --bar-hot: #c2b8ff;
+    --off-bg: #17171a; --off-ink: #6a6a72; --off-line: #33333a;
+    --yes: #4cc38a; --no: #ee7b6a; --warn-bg: #2e2a17; --warn-ink: #e8d48a; --shadow: none;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 16px 56px; }
+  .sample { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-bottom: 18px; }
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 24px; margin-bottom: 22px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: 26px; line-height: 1.2; margin: 2px 0 0; letter-spacing: -.01em; }
+  .when { color: var(--ink-2); font-size: 14px; text-align: right; }
+  .when div + div { color: var(--ink-3); font-size: 13px; }
+  .layout { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 920px) { .layout { grid-template-columns: 400px minmax(0, 1fr); align-items: start; } }
+  .stack { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); min-width: 0; }
+  .card { min-width: 0; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+  .pad { padding: 18px 20px; }
+  h2 { font-size: 15px; margin: 0; }
+  .h2sub { color: var(--ink-3); font-size: 13px; margin: 2px 0 12px; }
+
+  /* The five numbers */
+  .funnel { padding: 6px 0; }
+  .row { padding: 14px 20px; border-top: 1px solid var(--line); }
+  .row:first-child { border-top: 0; }
+  .row .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .label { font-weight: 600; font-size: 14px; }
+  .src { font-size: 12px; color: var(--ink-3); }
+  .val { font-size: 30px; font-weight: 680; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .note { font-size: 13px; color: var(--ink-2); margin-top: 4px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+  .pair .row { border-top: 0; }
+  .pair .row + .row { border-left: 1px solid var(--line); }
+  .pair .top { flex-direction: column; align-items: flex-start; gap: 0; }
+  .row.cpb { background: var(--accent-soft); border-radius: 0 0 15px 15px; }
+  .row.cpb .val { color: var(--accent); font-size: 34px; }
+  .off { background: repeating-linear-gradient(-45deg, var(--off-bg) 0 8px, transparent 8px 16px); }
+  .off .label, .off .note, .off .src { color: var(--off-ink); }
+  .row.off .val, .row.cpb.off .val { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--off-ink);
+              border: 1px dashed var(--off-line); border-radius: 999px; padding: 3px 10px; margin: 6px 0; display: inline-block; }
+  .row.cpb.off { background: repeating-linear-gradient(-45deg, var(--off-bg) 0 8px, transparent 8px 16px); }
+  .blank .val { color: var(--ink-3); min-width: 2ch; }
+
+  /* Chart */
+  .chart { height: 150px; margin-top: 6px; }
+  .chart svg { display: block; }
+  .chart .bar path { fill: var(--bar); }
+  .chart .bar.hot path { fill: var(--bar-hot); }
+  .chart .grid { stroke: var(--line); stroke-dasharray: 3 4; }
+  .chart .axis { stroke: var(--off-line); }
+  .xaxis { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+  .chart-empty { height: 100%; display: grid; place-items: center; color: var(--off-ink); font-size: 13px; text-transform: uppercase; letter-spacing: .08em;
+                 background: repeating-linear-gradient(-45deg, var(--off-bg) 0 8px, transparent 8px 16px); border-radius: 10px; }
+  .tip { position: fixed; pointer-events: none; opacity: 0; transition: opacity .1s; z-index: 10; background: var(--ink); color: var(--bg);
+         font-size: 12px; padding: 6px 9px; border-radius: 7px; white-space: nowrap; }
+
+  /* Campaign table */
+  .ctable { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .ctable th { text-align: right; font-size: 12px; font-weight: 600; color: var(--ink-3); padding: 0 0 8px 10px; }
+  .ctable th:first-child, .ctable td:first-child { text-align: left; padding-left: 0; }
+  .ctable td { text-align: right; padding: 9px 0 9px 10px; border-top: 1px solid var(--line); }
+  .ctable td:first-child { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ctable .nw { color: var(--off-ink); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+  .ctable tr.other td { color: var(--ink-2); font-style: italic; }
+  .scroll { overflow-x: auto; }
+
+  /* Bookings */
+  .bk { display: grid; grid-template-columns: 1fr; gap: 8px; padding: 12px 0; border-top: 1px solid var(--line); }
+  @media (min-width: 640px) { .bk { grid-template-columns: 1fr auto; align-items: center; } }
+  .bk .t { font-weight: 600; font-size: 14px; }
+  .bk .m { font-size: 12px; color: var(--ink-3); }
+  .bk.needs .t::after { content: "to mark"; margin-left: 8px; font-size: 11px; font-weight: 600; color: var(--accent);
+                        background: var(--accent-soft); padding: 1px 7px; border-radius: 999px; vertical-align: 1px; }
+  .q { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); flex-wrap: wrap; }
+  .q + .q { margin-top: 6px; }
+  .q span { min-width: 72px; }
+  .q button { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--line);
+              background: var(--card); color: var(--ink); cursor: pointer; min-height: 32px; }
+  .q button:hover { border-color: var(--ink-3); }
+  .q button.on.y { background: var(--yes); border-color: var(--yes); color: #fff; }
+  .q button.on.n { background: var(--no); border-color: var(--no); color: #fff; }
+  .q button:disabled { opacity: .55; cursor: progress; }
+  .q .soon { color: var(--ink-3); font-style: italic; }
+  .more { margin-top: 12px; width: 100%; font: inherit; font-size: 13px; font-weight: 600; color: var(--accent); background: var(--accent-soft);
+          border: 0; border-radius: 10px; padding: 10px; cursor: pointer; }
+  .err { color: var(--no); font-size: 13px; min-height: 1em; }
+  footer { margin-top: 26px; color: var(--ink-3); font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; }
+  footer a { color: var(--ink-2); }
+  @media (max-width: 420px) { h1 { font-size: 22px; } .val { font-size: 26px; } .row.cpb .val { font-size: 30px; } .row { padding: 13px 16px; } .pad { padding: 16px; } .when { text-align: left; } }
+  @media (max-width: 560px) {
+    .ctable thead { display: none; }
+    .ctable tr { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+    .ctable td { border: 0; padding: 0; text-align: left; white-space: normal; }
+    .ctable td:first-child { grid-column: 1 / -1; max-width: none; font-weight: 600; margin-bottom: 2px; }
+    .ctable td[data-label]::before { content: attr(data-label); display: block; font-size: 11px; font-weight: 400; color: var(--ink-3); font-family: inherit; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="sample"></div>
+  <header>
+    <div><div class="eyebrow">Meta ads · before and after the click</div><h1 id="acct">Loading…</h1></div>
+    <div class="when" id="when"></div>
+  </header>
+  <div class="layout">
+    <section class="card funnel" id="funnel" aria-label="The five numbers"></section>
+    <div class="stack">
+      <section class="card pad">
+        <h2>Spend per day</h2><div class="h2sub">Source: Meta Marketing API. Hover a bar for the day.</div>
+        <div class="chart" id="chart"></div><div class="xaxis" id="xaxis"></div>
+      </section>
+      <section class="card pad">
+        <h2>By campaign</h2><div class="h2sub">Spend and landed from Meta. Booked is matched by the utm_campaign tag on each booking.</div>
+        <div class="scroll" id="camps"></div>
+      </section>
+      <section class="card pad">
+        <h2>Calls booked in this window</h2>
+        <div class="h2sub">Your calendar cannot always tell where a booking came from or whether the call happened. Mark those here. Your marks stay when you refresh.</div>
+        <div class="err" id="mark-status" role="status"></div>
+        <div id="books"></div>
+      </section>
+    </div>
+  </div>
+  <footer><span id="tagged"></span><span>Designs: <span id="designs"></span></span></footer>
+</div>
+<script src="/dash.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+Dash.start((s, problem) => {
+  if (!s) { $("acct").textContent = problem; return; }
+  const h = Dash.header(s);
+  $("sample").innerHTML = h.sample ? `<div class="sample"><b>Sample data.</b> Nothing on this page is real. Run python3 dash.py pull to see your own numbers.</div>` : "";
+  $("acct").textContent = h.account;
+  $("when").innerHTML = `<div>${h.window} · ${Dash.esc(h.currency)}</div><div>${problem ? `<span class="err">${problem}</span>` : `Pulled ${h.pulled}`}</div>`;
+  $("tagged").textContent = h.tagged ? `Ad links: ${h.tagged}.` : "";
+  $("designs").innerHTML = Dash.designLinks("clean");
+
+  const R = Dash.rows(s), cell = (r, extra = "") => `<div class="row ${r.state === "off" ? "off" : r.state === "blank" ? "blank" : ""} ${extra}">
+      <div class="top"><div><div class="label">${r.label}</div><div class="src">Source: ${Dash.esc(r.source)}</div></div>
+      <div class="val">${r.state === "off" ? "not wired" : r.value}</div></div>
+      <div class="note">${Dash.esc(r.note)}</div></div>`;
+  $("funnel").innerHTML = cell(R[0]) + cell(R[1]) + `<div class="pair">${cell(R[2])}${cell(R[3])}</div>` + cell(R[4], "cpb");
+
+  Dash.drawBars($("chart"), s);
+  const d = s.days;
+  $("xaxis").innerHTML = s.spend === null || !d.length ? "" :
+    `<span>${Dash.day(d[0].day)}</span><span>highest day ${$("chart").dataset.max || ""}</span><span>${Dash.day(d[d.length - 1].day)}</span>`;
+
+  $("camps").innerHTML = Dash.campaignTable(s);
+
+  $("books").innerHTML = Dash.bookingsList(s, b => {
+    const l = Dash.bookingLine(b);
+    return `<div class="bk ${l.needs ? "needs" : ""}"><div><div class="t">${l.title}</div><div class="m">${l.meta}</div></div><div>${Dash.markButtons(b)}</div></div>`;
+  }, `<p class="h2sub">${s.calendar_wired ? "No calls booked in this window." : "No calendar connected yet."}</p>`);
+});
+</script>
+</body>
+</html>

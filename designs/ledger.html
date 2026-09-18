@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meta Ads Ledger</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧾</text></svg>">
+<!-- Design: ledger. Reads like a one page statement. Serif headings, mono figures, one green ink. -->
+<style>
+  :root {
+    --paper: #fbfaf5; --ink: #1c1b18; --ink-2: #5b5850; --ink-3: #8f8b80; --rule: #d9d5c8; --rule-2: #ebe8de;
+    --green: #1f6b4a; --green-soft: #e6f0ea; --bar: #2f7d5a; --bar-hot: #174d35; --red: #9c3b2c;
+    --off: #a8a497; --hatch: #f1efe7; --warn: #fff3cf; --warn-ink: #634b00;
+    --serif: ui-serif, "Iowan Old Style", Charter, "Palatino Linotype", Georgia, serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #16150f; --ink: #ebe7da; --ink-2: #b9b4a5; --ink-3: #85806f; --rule: #3a372d; --rule-2: #28261f;
+      --green: #6cc79b; --green-soft: #1b2a21; --bar: #5bb88b; --bar-hot: #9be0bd; --red: #e38a78;
+      --off: #6f6b5e; --hatch: #1d1c16; --warn: #2d2814; --warn-ink: #e6d18c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #16150f; --ink: #ebe7da; --ink-2: #b9b4a5; --ink-3: #85806f; --rule: #3a372d; --rule-2: #28261f;
+    --green: #6cc79b; --green-soft: #1b2a21; --bar: #5bb88b; --bar-hot: #9be0bd; --red: #e38a78;
+    --off: #6f6b5e; --hatch: #1d1c16; --warn: #2d2814; --warn-ink: #e6d18c;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.55 var(--sans); }
+  .sheet { max-width: 780px; margin: 0 auto; padding: 36px 16px 64px; }
+  .sample { background: var(--warn); color: var(--warn-ink); padding: 9px 12px; font-size: 14px; margin-bottom: 22px; border-left: 3px solid var(--warn-ink); }
+  .kicker { font: 600 11px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font: 600 34px/1.15 var(--serif); margin: 8px 0 6px; letter-spacing: -.01em; }
+  .dateline { color: var(--ink-2); font-size: 14px; padding-bottom: 18px; border-bottom: 3px double var(--ink); }
+  h2 { font: 600 20px/1.2 var(--serif); margin: 40px 0 4px; }
+  .lede { color: var(--ink-3); font-size: 13px; margin: 0 0 12px; }
+
+  /* The statement */
+  .line { display: grid; align-content: start; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 16px 0 14px; border-bottom: 1px solid var(--rule); }
+  .line .name { font: 600 19px/1.2 var(--serif); }
+  .line .src { grid-column: 1; font: 11px/1.4 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+  .line .fig { grid-row: 1 / span 2; grid-column: 2; align-self: center; font: 500 30px/1 var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .line .note { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--rule); }
+  .split .line { border-bottom: 0; grid-template-columns: 1fr; }
+  .split .line .fig { grid-row: auto; grid-column: 1; margin: 8px 0 0; }
+  .split .line + .line { border-left: 1px solid var(--rule); padding-left: 18px; }
+  .total { border-top: 3px double var(--ink); border-bottom: 0; margin-top: -1px; }
+  .total .name { font-size: 21px; }
+  .total .fig { color: var(--green); font-size: 36px; font-weight: 600; }
+  .off { background: repeating-linear-gradient(135deg, var(--hatch) 0 6px, transparent 6px 12px); }
+  .off .name, .off .note, .off .src { color: var(--off); }
+  .line.off .fig, .line.total.off .fig { font: italic 600 13px/1 var(--serif); letter-spacing: .08em; color: var(--off); text-transform: lowercase; font-variant: small-caps; }
+  .blank .fig { min-width: 3ch; color: var(--ink-3); }
+
+  /* Chart */
+  .chart { height: 130px; }
+  .chart svg { display: block; }
+  .chart .bar path { fill: var(--bar); }
+  .chart .bar.hot path { fill: var(--bar-hot); }
+  .chart .grid { stroke: var(--rule); stroke-dasharray: 2 4; }
+  .chart .axis { stroke: var(--ink); }
+  .xaxis { display: flex; justify-content: space-between; font: 12px var(--mono); color: var(--ink-3); margin-top: 6px; }
+  .chart-empty { height: 100%; display: grid; place-items: center; font: italic 14px var(--serif); color: var(--off);
+                 background: repeating-linear-gradient(135deg, var(--hatch) 0 6px, transparent 6px 12px); }
+  .tip { position: fixed; pointer-events: none; opacity: 0; transition: opacity .1s; z-index: 10; background: var(--ink); color: var(--paper);
+         font: 12px var(--mono); padding: 6px 9px; white-space: nowrap; }
+
+  /* Tables */
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { font: 600 11px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); text-align: right; padding: 0 0 8px 12px; border-bottom: 1px solid var(--ink); }
+  td { text-align: right; padding: 9px 0 9px 12px; border-bottom: 1px solid var(--rule-2); font: 14px var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; padding-left: 0; }
+  td:first-child { font: 15px var(--serif); max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+  td .nw { font: italic 12px var(--serif); color: var(--off); font-variant: small-caps; letter-spacing: .06em; }
+  tr.other td { color: var(--ink-2); }
+  tr.other td:first-child { font-style: italic; }
+
+  /* Bookings */
+  .bk { padding: 12px 0; border-bottom: 1px solid var(--rule-2); display: grid; gap: 8px; }
+  @media (min-width: 640px) { .bk { grid-template-columns: 1fr auto; align-items: center; } }
+  .bk .t { font: 16px var(--serif); }
+  .bk .m { font-size: 12px; color: var(--ink-3); }
+  .bk.needs .t::before { content: "●"; color: var(--green); font-size: 10px; margin-right: 8px; vertical-align: 2px; }
+  .q { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--ink-2); flex-wrap: wrap; }
+  .q + .q { margin-top: 6px; }
+  .q span { min-width: 70px; font-style: italic; font-family: var(--serif); font-size: 14px; }
+  .q button { font: 13px var(--sans); padding: 5px 12px; min-height: 32px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; }
+  .q button:hover { border-color: var(--ink); }
+  .q button.on.y { background: var(--green); border-color: var(--green); color: var(--paper); }
+  .q button.on.n { background: var(--red); border-color: var(--red); color: var(--paper); }
+  .q button:disabled { opacity: .55; cursor: progress; }
+  .q .soon { color: var(--ink-3); }
+  .more { margin-top: 14px; font: italic 15px var(--serif); color: var(--green); background: none; border: 0; border-bottom: 1px solid var(--green); padding: 2px 0; cursor: pointer; }
+  .err { color: var(--red); font-size: 13px; min-height: 1em; }
+  footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 18px; }
+  footer a { color: var(--ink-2); }
+  @media (max-width: 420px) {
+    h1 { font-size: 28px; } .line .fig { font-size: 25px; } .total .fig { font-size: 29px; }
+    .split .line + .line { padding-left: 12px; } .line .name { font-size: 17px; }
+  }
+  @media (max-width: 560px) {
+    .ctable thead { display: none; }
+    .ctable tr { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px 10px; padding: 10px 0; border-top: 1px solid var(--rule-2); }
+    .ctable td { border: 0; padding: 0; text-align: left; white-space: normal; }
+    .ctable td:first-child { grid-column: 1 / -1; max-width: none; font-weight: 600; margin-bottom: 2px; }
+    .ctable td[data-label]::before { content: attr(data-label); display: block; font-size: 11px; font-weight: 400; color: var(--ink-3); font-family: inherit; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div id="sample"></div>
+  <div class="kicker">Meta ads · statement</div>
+  <h1 id="acct">Loading…</h1>
+  <div class="dateline" id="when"></div>
+
+  <section id="statement" aria-label="The five numbers"></section>
+
+  <h2>Spend per day</h2>
+  <p class="lede">From the Meta Marketing API. Hover a bar for the day.</p>
+  <div class="chart" id="chart"></div><div class="xaxis" id="xaxis"></div>
+
+  <h2>By campaign</h2>
+  <p class="lede">Spend and landed from Meta. Booked is matched by the utm_campaign tag on each booking.</p>
+  <div class="scroll" id="camps"></div>
+
+  <h2>Calls booked in this window</h2>
+  <p class="lede">Where your calendar cannot tell if a booking came from the ads, or if the call happened, mark it here. Marks stay when you refresh.</p>
+  <div class="err" id="mark-status" role="status"></div>
+  <div id="books"></div>
+
+  <footer><span id="tagged"></span><span>Designs: <span id="designs"></span></span></footer>
+</div>
+<script src="/dash.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+Dash.start((s, problem) => {
+  if (!s) { $("acct").textContent = problem; return; }
+  const h = Dash.header(s);
+  $("sample").innerHTML = h.sample ? `<div class="sample"><b>Sample data.</b> Nothing on this page is real. Run python3 dash.py pull to see your own numbers.</div>` : "";
+  $("acct").textContent = h.account;
+  $("when").innerHTML = `${h.window} · ${Dash.esc(h.currency)} · ${problem ? `<span class="err">${problem}</span>` : `pulled ${h.pulled}`}`;
+  $("tagged").textContent = h.tagged ? `Ad links: ${h.tagged}.` : "";
+  $("designs").innerHTML = Dash.designLinks("ledger");
+
+  const R = Dash.rows(s), line = (r, extra = "") => `<div class="line ${r.state === "off" ? "off" : r.state === "blank" ? "blank" : ""} ${extra}">
+    <div class="name">${r.label}</div><div class="src">${Dash.esc(r.source)}</div>
+    <div class="fig">${r.state === "off" ? "not wired" : r.value}</div><div class="note">${Dash.esc(r.note)}</div></div>`;
+  $("statement").innerHTML = line(R[0]) + line(R[1]) + `<div class="split">${line(R[2])}${line(R[3])}</div>` + line(R[4], "total");
+
+  Dash.drawBars($("chart"), s);
+  const d = s.days;
+  $("xaxis").innerHTML = s.spend === null || !d.length ? "" :
+    `<span>${Dash.day(d[0].day)}</span><span>top ${$("chart").dataset.max || ""}</span><span>${Dash.day(d[d.length - 1].day)}</span>`;
+
+  $("camps").innerHTML = Dash.campaignTable(s, "From ads, no matching campaign tag");
+
+  $("books").innerHTML = Dash.bookingsList(s, b => {
+    const l = Dash.bookingLine(b);
+    return `<div class="bk ${l.needs ? "needs" : ""}"><div><div class="t">${l.title}</div><div class="m">${l.meta}</div></div><div>${Dash.markButtons(b)}</div></div>`;
+  }, `<p class="lede">${s.calendar_wired ? "No calls booked in this window." : "No calendar connected yet."}</p>`);
+});
+</script>
+</body>
+</html>

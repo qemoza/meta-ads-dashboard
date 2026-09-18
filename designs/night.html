@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Meta Ads Night</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌙</text></svg>">
+<!-- Design: night. Always dark, big figures, a step by step drop off panel. -->
+<style>
+  :root {
+    --bg: #0c0d11; --panel: #15171e; --panel-2: #1b1e27; --ink: #eef0f6; --ink-2: #aab0c0; --ink-3: #6f7688; --line: #252936;
+    --violet: #9d8cff; --violet-2: #6c5ce7; --violet-soft: rgba(157, 140, 255, .12); --bar: #7f6df2; --bar-hot: #c4baff;
+    --green: #3fd08f; --red: #ff7a6b; --off: #555b6c; --hatch: #12141a; --warn: #3a2f0e; --warn-ink: #f3d77c;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: radial-gradient(1200px 500px at 20% -10%, #1a1733 0%, transparent 60%), var(--bg); background-color: var(--bg);
+         color: var(--ink); font: 15px/1.5 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; min-height: 100vh; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 28px 16px 56px; }
+  .sample { background: var(--warn); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-bottom: 18px; }
+  header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 8px 20px; margin-bottom: 20px; }
+  .kicker { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--violet); font-weight: 600; }
+  h1 { margin: 4px 0 0; font-size: 28px; letter-spacing: -.02em; line-height: 1.15; }
+  .when { color: var(--ink-2); font-size: 13px; }
+  .top { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 980px) { .top { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px; min-width: 0; }
+  .panel h2 { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .sub { font-size: 12px; color: var(--ink-3); margin: 3px 0 12px; }
+
+  /* The five numbers */
+  .nums { display: grid; gap: 10px; }
+  .num { background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+  .num .lab { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--ink-2); font-weight: 600; }
+  .num .lab small { font-weight: 400; color: var(--ink-3); font-size: 11px; text-align: right; }
+  .num .v { font-size: 38px; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1.15; margin-top: 2px; }
+  .num .n { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pair .num .lab { flex-direction: column; gap: 0; }
+  .pair .num .lab small { text-align: left; }
+  .num.cpb { background: linear-gradient(135deg, var(--violet-2), #4a3db8); border-color: transparent; }
+  .num.cpb .lab, .num.cpb .lab small, .num.cpb .n { color: rgba(255, 255, 255, .78); }
+  .num.cpb .v { font-size: 44px; color: #fff; }
+  .num.off, .num.cpb.off { background: repeating-linear-gradient(-45deg, var(--hatch) 0 8px, transparent 8px 16px), var(--panel); border: 1px dashed var(--line); }
+  .num.off .lab, .num.off .lab small, .num.off .n { color: var(--off); }
+  .num.off .v, .num.cpb.off .v { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--off); padding: 12px 0 6px; }
+  .num.blank .v { color: var(--ink-3); min-height: 1.15em; }
+
+  /* Drop off */
+  .steps { display: grid; gap: 12px; margin-top: 4px; }
+  .step .l { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-2); }
+  .step .l b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .track { height: 10px; border-radius: 999px; background: var(--panel-2); margin-top: 6px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--violet-2), var(--violet)); min-width: 3px; }
+  .step.off .l, .step.off .l b { color: var(--off); }
+  .step.off .track { background: repeating-linear-gradient(-45deg, var(--hatch) 0 6px, var(--panel-2) 6px 12px); }
+
+  /* Chart */
+  .chart { height: 190px; margin-top: 6px; }
+  .chart svg { display: block; }
+  .chart .bar path { fill: var(--bar); }
+  .chart .bar.hot path { fill: var(--bar-hot); }
+  .chart .grid { stroke: var(--line); stroke-dasharray: 3 5; }
+  .chart .axis { stroke: #343a4b; }
+  .xaxis { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+  .chart-empty { height: 100%; display: grid; place-items: center; color: var(--off); font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+                 background: repeating-linear-gradient(-45deg, var(--hatch) 0 8px, transparent 8px 16px); border-radius: 12px; border: 1px dashed var(--line); }
+  .tip { position: fixed; pointer-events: none; opacity: 0; transition: opacity .1s; z-index: 10; background: #fff; color: #111;
+         font-size: 12px; padding: 6px 9px; border-radius: 8px; white-space: nowrap; box-shadow: 0 6px 24px rgba(0, 0, 0, .4); }
+  .right { display: grid; gap: 16px; align-content: start; min-width: 0; }
+
+  /* Tables and bookings */
+  .below { display: grid; gap: 16px; margin-top: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 980px) { .below { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; } }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th { color: var(--ink-3); font-weight: 600; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; text-align: right; padding: 0 0 8px 10px; }
+  td { text-align: right; padding: 9px 0 9px 10px; border-top: 1px solid var(--line); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; padding-left: 0; }
+  td:first-child { max-width: 180px; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+  td .nw { color: var(--off); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  tr.other td { color: var(--ink-2); font-style: italic; }
+  .bk { display: grid; gap: 8px; padding: 12px 0; border-top: 1px solid var(--line); }
+  @media (min-width: 640px) { .bk { grid-template-columns: 1fr auto; align-items: center; } }
+  .bk .t { font-weight: 600; font-size: 14px; }
+  .bk .m { font-size: 12px; color: var(--ink-3); }
+  .bk.needs { position: relative; }
+  .bk.needs .t::after { content: "to mark"; margin-left: 8px; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--violet);
+                        border: 1px solid var(--violet); border-radius: 999px; padding: 0 7px; vertical-align: 2px; }
+  .q { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); }
+  .q + .q { margin-top: 6px; }
+  .q span { min-width: 72px; }
+  .q button { font: inherit; font-size: 13px; padding: 5px 12px; min-height: 32px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); cursor: pointer; }
+  .q button:hover { border-color: var(--ink-3); }
+  .q button.on.y { background: var(--green); border-color: var(--green); color: #06140d; }
+  .q button.on.n { background: var(--red); border-color: var(--red); color: #1d0703; }
+  .q button:disabled { opacity: .5; cursor: progress; }
+  .q .soon { color: var(--ink-3); font-style: italic; }
+  .more { margin-top: 12px; width: 100%; font: inherit; font-size: 13px; font-weight: 600; color: var(--violet); background: var(--violet-soft);
+          border: 1px solid var(--line); border-radius: 10px; padding: 10px; cursor: pointer; }
+  .err { color: var(--red); font-size: 13px; min-height: 1em; }
+  footer { margin-top: 22px; color: var(--ink-3); font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; }
+  footer a { color: var(--ink-2); }
+  @media (max-width: 420px) { h1 { font-size: 23px; } .num .v { font-size: 32px; } .num.cpb .v { font-size: 36px; } .panel { padding: 14px; } }
+  @media (max-width: 560px) {
+    .ctable thead { display: none; }
+    .ctable tr { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+    .ctable td { border: 0; padding: 0; text-align: left; white-space: normal; }
+    .ctable td:first-child { grid-column: 1 / -1; max-width: none; font-weight: 600; margin-bottom: 2px; }
+    .ctable td[data-label]::before { content: attr(data-label); display: block; font-size: 11px; font-weight: 400; color: var(--ink-3); font-family: inherit; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="sample"></div>
+  <header>
+    <div><div class="kicker">Meta ads · before and after the click</div><h1 id="acct">Loading…</h1></div>
+    <div class="when" id="when"></div>
+  </header>
+  <div class="top">
+    <section class="panel"><h2>The five numbers</h2><div class="sub">Top to bottom, before the click and after it.</div><div class="nums" id="nums"></div></section>
+    <div class="right">
+      <section class="panel"><h2>Spend per day</h2><div class="sub">Source: Meta Marketing API. Hover a bar for the day.</div>
+        <div class="chart" id="chart"></div><div class="xaxis" id="xaxis"></div></section>
+      <section class="panel"><h2>Where people drop off</h2><div class="sub">Each bar is a share of the step before it.</div><div class="steps" id="steps"></div></section>
+    </div>
+  </div>
+  <div class="below">
+    <section class="panel"><h2>By campaign</h2><div class="sub">Spend and landed from Meta. Booked matched by utm_campaign.</div><div class="scroll" id="camps"></div></section>
+    <section class="panel"><h2>Calls booked in this window</h2>
+      <div class="sub">Where your calendar cannot tell if a booking came from the ads, or if the call happened, mark it here.</div>
+      <div class="err" id="mark-status" role="status"></div><div id="books"></div></section>
+  </div>
+  <footer><span id="tagged"></span><span>Designs: <span id="designs"></span></span></footer>
+</div>
+<script src="/dash.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+Dash.start((s, problem) => {
+  if (!s) { $("acct").textContent = problem; return; }
+  const h = Dash.header(s);
+  $("sample").innerHTML = h.sample ? `<div class="sample"><b>Sample data.</b> Nothing on this page is real. Run python3 dash.py pull to see your own numbers.</div>` : "";
+  $("acct").textContent = h.account;
+  $("when").innerHTML = `${h.window} · ${Dash.esc(h.currency)} · ${problem ? `<span class="err">${problem}</span>` : `pulled ${h.pulled}`}`;
+  $("tagged").textContent = h.tagged ? `Ad links: ${h.tagged}.` : "";
+  $("designs").innerHTML = Dash.designLinks("night");
+
+  const R = Dash.rows(s), num = (r, extra = "") => `<div class="num ${r.state === "off" ? "off" : r.state === "blank" ? "blank" : ""} ${extra}">
+    <div class="lab"><span>${r.label}</span><small>${Dash.esc(r.source)}</small></div>
+    <div class="v">${r.state === "off" ? "not wired" : r.value}</div><div class="n">${Dash.esc(r.note)}</div></div>`;
+  $("nums").innerHTML = num(R[0]) + num(R[1]) + `<div class="pair">${num(R[2])}${num(R[3])}</div>` + num(R[4], "cpb");
+
+  Dash.drawBars($("chart"), s);
+  const d = s.days;
+  $("xaxis").innerHTML = s.spend === null || !d.length ? "" :
+    `<span>${Dash.day(d[0].day)}</span><span>highest day ${$("chart").dataset.max || ""}</span><span>${Dash.day(d[d.length - 1].day)}</span>`;
+
+  // Each step as a share of the one before. Blank when there is nothing to divide by.
+  const step = (label, a, b, of) => {
+    if (a === null || b === null) return `<div class="step off"><div class="l"><span>${label}</span><b>not wired</b></div><div class="track"></div></div>`;
+    const p = b ? (100 * a) / b : null;
+    return `<div class="step"><div class="l"><span>${label} <span style="color:var(--ink-3)">${Dash.int(a)} of ${Dash.int(b)} ${of}</span></span><b>${p === null ? "" : p.toFixed(1) + "%"}</b></div>
+      <div class="track">${p === null ? "" : `<div class="fill" style="width:${Math.min(100, p)}%"></div>`}</div></div>`;
+  };
+  $("steps").innerHTML =
+    step("Landed", s.landed, s.spend === null ? null : s.clicks, "link clicks") +
+    step("Booked", s.booked, s.landed, "landed") +
+    step("Showed", s.showed, s.showed === null ? null : s.ad_calls_held, "past ad calls");
+
+  $("camps").innerHTML = Dash.campaignTable(s, "From ads, no campaign tag");
+
+  $("books").innerHTML = Dash.bookingsList(s, b => {
+    const l = Dash.bookingLine(b);
+    return `<div class="bk ${l.needs ? "needs" : ""}"><div><div class="t">${l.title}</div><div class="m">${l.meta}</div></div><div>${Dash.markButtons(b)}</div></div>`;
+  }, `<p class="sub">${s.calendar_wired ? "No calls booked in this window." : "No calendar connected yet."}</p>`);
+});
+</script>
+</body>
+</html>
