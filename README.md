@@ -2,7 +2,7 @@
 
 One script pulls your numbers. One page shows them. Spend, landed, booked, showed and cost per booked call, top to bottom, for the last 30 days. It runs on your own computer, and every number on it says where it came from.
 
-From this video: [How to Track Your Meta Ads in One Dashboard, Built With Claude](https://www.youtube.com/@Hamzaouladd)
+From this video: [How to Track Your Meta Ads With Claude (One Dashboard)](https://youtu.be/9N2YV1KRhHA)
 
 ![The clean design with sample data](docs/clean-1280.png)
 
