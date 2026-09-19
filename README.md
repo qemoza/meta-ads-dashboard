@@ -1,5 +1,7 @@
 # Meta Ads Dashboard. Track your Meta ads on one page, built with Claude
 
+**Written walkthrough:** [How to Track Your Meta Ads With Claude on One Dashboard](https://www.qemoza.ai/blog/how-to-track-meta-ads-with-claude) on the Qemoza blog.
+
 One script pulls your numbers. One page shows them. Spend, landed, booked, showed and cost per booked call, top to bottom, for the last 30 days. It runs on your own computer, and every number on it says where it came from.
 
 From this video: [How to Track Your Meta Ads With Claude (One Dashboard)](https://youtu.be/9N2YV1KRhHA)
